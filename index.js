@@ -83,6 +83,8 @@ function determineWinner(game) {
 
     game.pot = 0;
     game.gameStage = GAME_STAGES.GAME_OVER;
+    game.gameInProgress = false;
+    game.gameOverTimeStamp = new Date().toISOString();
 }
 
 function distributePotsForFolding(game) {
@@ -105,6 +107,8 @@ function distributePotsForFolding(game) {
     game.pot = 0;
     game.gameStage = GAME_STAGES.GAME_OVER;
     game.netWinners.push(updatedPlayers[remainingPlayerIndex].id);  // Ensure to use 'id' not 'playerId'
+    game.gameInProgress = false;
+    game.gameOverTimeStamp = new Date().toISOString();
 }
 
 function checkAllInCondition(game) {
@@ -312,9 +316,11 @@ async function saveGameState(gameId, game) {
     const params = {
         TableName: gameTableName,
         Key: { gameId },
-        UpdateExpression: "SET players = :p, bettingStarted = :bS, minRaiseAmount = :mRA, deck = :deck, pot = :pot, gameStage = :gs, currentTurn = :ct, communityCards = :cc, highestBet = :hb, gameInProgress = :gip, netWinners = :nw",
+        UpdateExpression: "SET players = :p, gameInProgress = :gIP, gameOverTimeStamp = :gOTS, bettingStarted = :bS, minRaiseAmount = :mRA, deck = :deck, pot = :pot, gameStage = :gs, currentTurn = :ct, communityCards = :cc, highestBet = :hb, gameInProgress = :gip, netWinners = :nw",
         ExpressionAttributeValues: {
             ":p": game.players,
+            ":gIP": game.gameInProgress,
+            ":gOTS": game.gameOverTimeStamp,
             ":bS": game.bettingStarted,
             ":mRA": game.minRaiseAmount,
             ":pot": game.pot,
