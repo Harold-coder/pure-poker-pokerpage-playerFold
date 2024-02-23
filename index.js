@@ -105,20 +105,6 @@ function distributePotsForFolding(game) {
     game.pot = 0;
     game.gameStage = GAME_STAGES.GAME_OVER;
     game.netWinners.push(updatedPlayers[remainingPlayerIndex].id);  // Ensure to use 'id' not 'playerId'
-
-    // Save the updated game state back to DynamoDB
-    saveGameState(game, (err) => {
-        if (err) {
-            console.error("Error saving updated game state:", err);
-            return; // Handle the error appropriately
-        }
-
-        // Emit the game update event to all connected clients
-        io.to(game.gameId).emit('gameUpdate', prepareSimplifiedGameState(game));
-
-        // Setup the next game if necessary
-        setupNextGame(game);  // Ensure setupNextGame is adapted to use gameId
-    });
 }
 
 function checkAllInCondition(game) {
